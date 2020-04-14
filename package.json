@@ -1,0 +1,25 @@
+{
+  "name": "employeetracker",
+  "version": "1.0.0",
+  "description": "cli cms using mysql",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "watch": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrlong/EmployeeTracker.git"
+  },
+  "author": "Nathan Long",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nrlong/EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/nrlong/EmployeeTracker#readme",
+  "dependencies": {
+    "inquirer": "^7.1.0",
+    "mysql": "^2.18.1"
+  }
+}
