@@ -79,7 +79,7 @@ function viewRoles(){
 }
 
 function viewEmployees(){
-    let query = "SELECT * FROM employees"
+    let query = "SELECT employees.first_name, employees.last_name, employee_role.title, employee_role.salary, department.name  FROM employees LEFT JOIN employee_role ON employee_role.id = employees.role_id LEFT JOIN department ON employee_role.department_id = department.id";
     connection.query(query, function (err, res){
         if (err) throw err;
         console.table(res);
@@ -146,7 +146,34 @@ function addRole(){
 }
 
 function addEmployee(){
-    start();
+    let currentRoles = [];
+    let query = "SELECT * FROM employee_roles";
+    connection.query(query, function(err, res){
+        
+        for(let i =0; i < res.length; i++){
+            currentRoles.push(res[i].name);
+        };
+        console.log(currentRoles);
+    })
+    inquirer.prompt([{
+        name: "first_name",
+        type: "input",
+        message: "Enter First Name."
+    },{
+        name: "last_name",
+        type: "input",
+        message: "Enter Last Name."
+    },{
+        name: "role_id",
+        type: "list",
+        message: "Please select a role",
+        choices: currentRoles
+    },
+]).then(function(answer){
+    console.log(answer)
+})
+
+    // start();
 }
 
 module.exports = {
