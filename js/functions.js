@@ -143,37 +143,48 @@ function addRole(){
         start();
     })
 })   
-}
+};
 
 function addEmployee(){
     let currentRoles = [];
-    let query = "SELECT * FROM employee_roles";
+    let query = "SELECT * FROM employee_role";
     connection.query(query, function(err, res){
         
-        for(let i =0; i < res.length; i++){
-            currentRoles.push(res[i].name);
+        for(let i = 0; i < res.length; i++){
+            currentRoles.push(res[i].title);
         };
         console.log(currentRoles);
-    })
+    });
     inquirer.prompt([{
-        name: "first_name",
         type: "input",
+        name: "first_name",
         message: "Enter First Name."
     },{
-        name: "last_name",
         type: "input",
+        name: "last_name",
         message: "Enter Last Name."
     },{
-        name: "role_id",
         type: "list",
+        name: "role_id",
         message: "Please select a role",
         choices: currentRoles
     },
 ]).then(function(answer){
     console.log(answer)
+    let roleID;
+    for(let i = 0; i < currentRoles.length; i++){
+        if(currentRoles[i] === answer.role_id){
+            roleID = i + 1;
+        }
+    }
+    let query = "INSERT INTO employees(first_name, last_name, role_id) VALUES (?, ?, ?)";
+    connection.query(query, [answer.first_name, answer.last_name, roleID], function(err, res){
+        if(err) throw err;
+        console.log("Employee has been added...");
+        start();
+    })
+    
 })
-
-    // start();
 }
 
 module.exports = {
