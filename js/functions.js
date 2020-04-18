@@ -1,7 +1,5 @@
 const connection = require("../db/db");
-const mysql = require("mysql");
 const inquirer = require("inquirer");
-// const connection = require("./db/db")
 const cTable = require('console.table');
 
 function start(){
@@ -10,13 +8,13 @@ function start(){
         type: "list",
         message: "What would you like to do?",
         choices:[
+            "view employees",
             "view department",
             "view roles",
-            "view employees",
             "add department",
             "add roles",
             "add employee",
-            // "update employee role",
+            "update employee role",
             "Quit"
         ]
     }).then(function(answer){
@@ -46,9 +44,9 @@ function start(){
             addEmployee();
             break;
 
-            // case "update employee role":
-            //     updateEmployeeRole();
-            // break;
+            case "update employee role":
+            updateRole();
+            break;
 
             default:
             console.log("Thank you for using this service!")
@@ -93,7 +91,8 @@ function addDepartment(){
         type: "input",
         name: "name_department",
         message: "What is the name of the department you would like to add?"
-    }]).then(function(answer){
+    },
+]).then(function(answer){
     connection.query("INSERT INTO department(name) VALUES(?)", [answer.name_department], function(err, res){
         if(err) throw err;
         console.log("Department has been succesfully added...")
@@ -110,7 +109,6 @@ function addRole(){
         for(let i =0; i < res.length; i++){
             currentDepts.push(res[i].name);
         };
-        // console.log(currentDepts);
     })
     inquirer.prompt([{
         type: "input",
@@ -127,14 +125,12 @@ function addRole(){
         choices: currentDepts
     },
 ]).then(function(answer){
-    console.log(answer);
     let departmentID;
     for(let i =0; i < currentDepts.length; i++){
         if(currentDepts[i] === answer.department_list){
             departmentID = i + 1
         }
     };
-    // console.log(departmentID);
 
     let query = "INSERT INTO employee_role(title, salary, department_id) VALUES(?, ?, ?)";
     connection.query(query, [answer.role_name, answer.role_salary, departmentID], function(err, res){
@@ -153,7 +149,6 @@ function addEmployee(){
         for(let i = 0; i < res.length; i++){
             currentRoles.push(res[i].title);
         };
-        console.log(currentRoles);
     });
     inquirer.prompt([{
         type: "input",
@@ -170,7 +165,6 @@ function addEmployee(){
         choices: currentRoles
     },
 ]).then(function(answer){
-    console.log(answer)
     let roleID;
     for(let i = 0; i < currentRoles.length; i++){
         if(currentRoles[i] === answer.role_id){
@@ -185,6 +179,63 @@ function addEmployee(){
     })
     
 })
+}
+
+function updateRole(){
+    let query = "SELECT * FROM employees";
+    connection.query(query, function(err, res){
+        if (err) throw err;
+        let currentEmployees = res.map(function(names){
+            return `${names.first_name} ${names.last_name}` 
+        });
+        inquirer.prompt([{
+            type: "list",
+            name: "employee_names",
+            message: "Please select the employee you would like to update.",
+            choices: currentEmployees
+        }]).then(function(answer){
+            // console.log(answer)
+            let employeeID;
+            for(let i=0; i< currentEmployees.length; i++){
+                if(currentEmployees[i] === answer.employee_names){
+                    employeeID = i + 1;
+                    break;
+                };
+            };
+        let query2 = "SELECT * FROM employee_role";
+        let currentRoles2 = [];
+        connection.query(query2, function(err, res){
+            if (err) throw err;
+            for(let i=0; i < res.length; i++){
+                currentRoles2.push(res[i].title)
+            };
+            // console.log(currentRoles2);
+        });
+        inquirer.prompt([{
+            type: "list",
+            name: "new_role",
+            message: "What is the new role?",
+            choices: currentRoles2
+        }
+        ]).then(function(answer){
+            let roleID;
+            for(let i =0; i < currentRoles2.length; i++){
+                if(currentRoles2[i] === answer.new_role){
+                    roleID = i + 1;
+                    break;
+                }
+            }
+            let query3 = "UPDATE employees SET role_id WHERE id = ?"
+            connection.query(query3, [roleID, employeeID], function(err, res){
+                if(err) throw err;
+                console.log("The role has been succesfully updated...");
+            });
+        });
+
+    })
+
+})
+    start();
 }
 
 module.exports = {
