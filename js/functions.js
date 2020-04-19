@@ -165,6 +165,8 @@ function addEmployee(){
         choices: currentRoles
     },
 ]).then(function(answer){
+
+    // create comparison variable for role id placement
     let roleID;
     for(let i = 0; i < currentRoles.length; i++){
         if(currentRoles[i] === answer.role_id){
@@ -180,7 +182,7 @@ function addEmployee(){
     
 });
 };
-//function currently not working...
+// update roles
 function updateRole(){
     let query = "SELECT * FROM employees";
     connection.query(query, function(err, res){
@@ -195,7 +197,6 @@ function updateRole(){
             for(let i=0; i < res.length; i++){
                 currentRoles2.push(res[i].title)
             };
-            // console.log(currentRoles2);
         
         inquirer.prompt([{
             type: "list",
@@ -209,6 +210,7 @@ function updateRole(){
             choices: currentRoles2
         },
         ]).then(function(answer){
+            //create comparison variable for role ID
             let id;
             for(let i=0; i< currentEmployees.length; i++){
                 if(currentEmployees[i] === answer.employee_names){
@@ -217,11 +219,11 @@ function updateRole(){
                     break;
                 };
             };
+            // create role variable
             let roleID2;
             for(let i =0; i < currentRoles2.length; i++){
                 if(currentRoles2[i] === answer.update_role){
                     roleID2 = i + 1;
-                    // console.log(roleID2);
                     break;
                 };
             };
