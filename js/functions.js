@@ -129,7 +129,7 @@ function addRole(){
     for(let i =0; i < currentDepts.length; i++){
         if(currentDepts[i] === answer.department_list){
             departmentID = i + 1
-        }
+        };
     };
 
     let query = "INSERT INTO employee_role(title, salary, department_id) VALUES(?, ?, ?)";
@@ -169,18 +169,18 @@ function addEmployee(){
     for(let i = 0; i < currentRoles.length; i++){
         if(currentRoles[i] === answer.role_id){
             roleID = i + 1;
-        }
-    }
+        };
+    };
     let query = "INSERT INTO employees(first_name, last_name, role_id) VALUES (?, ?, ?)";
     connection.query(query, [answer.first_name, answer.last_name, roleID], function(err, res){
         if(err) throw err;
         console.log("Employee has been added...");
         start();
-    })
+    });
     
-})
-}
-
+});
+};
+//function currently not working...
 function updateRole(){
     let query = "SELECT * FROM employees";
     connection.query(query, function(err, res){
@@ -188,20 +188,6 @@ function updateRole(){
         let currentEmployees = res.map(function(names){
             return `${names.first_name} ${names.last_name}` 
         });
-        inquirer.prompt([{
-            type: "list",
-            name: "employee_names",
-            message: "Please select the employee you would like to update.",
-            choices: currentEmployees
-        }]).then(function(answer){
-            // console.log(answer)
-            let employeeID;
-            for(let i=0; i< currentEmployees.length; i++){
-                if(currentEmployees[i] === answer.employee_names){
-                    employeeID = i + 1;
-                    break;
-                };
-            };
         let query2 = "SELECT * FROM employee_role";
         let currentRoles2 = [];
         connection.query(query2, function(err, res){
@@ -210,32 +196,46 @@ function updateRole(){
                 currentRoles2.push(res[i].title)
             };
             // console.log(currentRoles2);
-        });
+        
         inquirer.prompt([{
             type: "list",
-            name: "new_role",
+            name: "employee_names",
+            message: "Please select the employee you would like to update.",
+            choices: currentEmployees
+        },{
+            type: "list",
+            name: "update_role",
             message: "What is the new role?",
             choices: currentRoles2
-        }
+        },
         ]).then(function(answer){
-            let roleID;
-            for(let i =0; i < currentRoles2.length; i++){
-                if(currentRoles2[i] === answer.new_role){
-                    roleID = i + 1;
+            let id;
+            for(let i=0; i< currentEmployees.length; i++){
+                if(currentEmployees[i] === answer.employee_names){
+                    console.log(id);
+                    id = i + 1;
                     break;
-                }
-            }
-            let query3 = "UPDATE employees SET role_id WHERE id = ?"
-            connection.query(query3, [roleID, employeeID], function(err, res){
+                };
+            };
+            let roleID2;
+            for(let i =0; i < currentRoles2.length; i++){
+                if(currentRoles2[i] === answer.update_role){
+                    roleID2 = i + 1;
+                    // console.log(roleID2);
+                    break;
+                };
+            };
+
+            console.log(roleID2, id);
+            let query3 = "UPDATE employees SET role_id = ? WHERE id = ?"
+            connection.query(query3, [roleID2, id], function(err, res){
                 if(err) throw err;
                 console.log("The role has been succesfully updated...");
+                start();
             });
         });
-
-    })
-
-})
-    start();
+    });
+    });
 }
 
 module.exports = {

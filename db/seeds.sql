@@ -15,4 +15,4 @@ INSERT INTO employees(first_name, last_name, role_id, manager_id)
 VALUES("Commander", "Zavala", 1, 1),
 ("Cayde", "6", 2, 1),
 ("Ikora", "Rey", 3, 1),
-("Lord", "Shaxx", 4, 1);
+("Lord", "Shaxx", 3, 1);
